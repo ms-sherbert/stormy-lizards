@@ -2,7 +2,7 @@
 
 Code and data repository for the manuscript entitled:
 
-"Deacon MR, Herbert SM, Nelson NJ. Storm surge impacts on coastal lizard activity and abundance: a case study on how climate change may affect endemic species." Submitted to the New Zealand Journal of Ecology in July 2024.
+"Deacon MR, Herbert SM, Nelson NJ. Storm surge impacts on coastal lizard populations: a case study on how climate change may affect endemic species." Submitted to the New Zealand Journal of Ecology in July 2024.
 
 All code is written for R version 4.3.1. We cannot guarantee that these codes will work with other versions of R. 
 
