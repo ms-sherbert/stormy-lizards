@@ -28,8 +28,8 @@ source("Code/Model-selection-functions.R")
 
 CPUE<-read.csv("Outputs/CPUElizards.csv")
 Mt1<-read.csv("Outputs/Mtlizards.csv")
-disturbance<-read.csv("Monitoring-info/Site_inundation_and_trap_replacement.csv")
-temperatures<-read.csv("Monitoring-info/CMR_check_schedule.csv")
+disturbance<-read.csv("Data/Site_inundation_and_trap_replacement.csv")
+temperatures<-read.csv("Data/CMR_check_schedule.csv")
 
 #=== Compute additional variables and tidy data frame ===#
 
