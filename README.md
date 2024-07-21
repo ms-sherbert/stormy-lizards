@@ -6,7 +6,7 @@ Code and data repository for the manuscript entitled:
 
 All code is written for R version 4.3.1. We cannot guarantee that these codes will work with other versions of R. 
 
-This code can be cited with the following doi: https://doi.org/10.5281/zenodo.12770298
+This code can be cited with the following doi: [![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.12770298.svg)](https://doi.org/10.5281/zenodo.12770298)
 
 ## Repository contents
 
