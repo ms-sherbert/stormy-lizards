@@ -57,7 +57,7 @@ captures$BA <- rep(0, times = length(captures$uID))
 captures$BA[captures$Season < SDates[7]] <- 0
 captures$BA[captures$Season >= SDates[7]] <- 1
 captures$Season.centred <- captures$Season - SDates[7]
-captures$Wt_lizard_g[captures$Wt_lizard_g == 0] <- NA #find and change any data entry mistakes to NA
+#captures$Wt_lizard_g[captures$Wt_lizard_g == 0] <- NA #find and change any data entry mistakes to NA
 captures$SVL_mm[captures$SVL_mm == 0] <- NA #find and change any data entry mistakes to NA
 captures <- subset(captures,!is.na(SVL_mm)) #remove missing values of SVL
 
@@ -95,42 +95,25 @@ cor(WMdf[,c(2,11)],method="spearman",use="complete.obs")  # rho = 0.218
 #=== SVL models ===#
 
 #--- OP SVL ---#
-M1a.svlOP <- lmer(SVL_transOP ~ Season.centred*BA*inundated + (Season.centred|Grid), data = OPdf) #fit is singular, grid intercept explains zero variance
-M2a.svlOP <- lmer(SVL_transOP ~ Season.centred*inundated + (Season.centred|Grid), data = OPdf) #fit is singular, grid intercept explains zero variance
-
-M1.svlOP <- lm(SVL_transOP ~ Season.centred*BA*inundated, data = OPdf)
-M2.svlOP <- lm(SVL_transOP ~ Season.centred*inundated, data = OPdf)
+M1a.svlOP <- lmer(SVL_transOP ~ BA*inundated + (Season.centred|Grid), data = OPdf) #fit is singular, grid intercept explains zero variance
+M1.svlOP <- lmer(SVL_transOP ~ BA*inundated + (1|Grid), data = OPdf)
+M2.svlOP <- lm(SVL_transOP ~ BA*inundated, data = OPdf)
 
 anova(M1a.svlOP,M1.svlOP) #Inclusion of random term doesn't improve fit at all
-anova(M2a.svlOP,M2.svlOP) #Inclusion of random term doesn't improve fit at all
+anova(M1a.svlOP,M2.svlOP) #Inclusion of random term doesn't improve fit at all
 
-AIC.svlOP <- AIC(M1.svlOP,M2.svlOP)
-DAIC.svlOP <- Delta.AIC(AIC.svlOP$AIC)
-WAIC.svlOP <- AIC.weight(DAIC.svlOP)
-
-Cand.model.svlOP <- as.data.frame(cbind(AIC.svlOP, DAIC.svlOP, AIC.svlOP$df))
-Model.selection.svlOP <- Cand.model.svlOP %>%
-  reframe("Model" = c(1:2),
-          "AIC" = round(AIC.svlOP,2), 
-          "DAIC" = round(DAIC.svlOP,2),
-          "DF" = round(AIC.svlOP$df,2)
-  ) %>%
-  arrange(AIC)
-
-Model.selection.svlOP
-
-summary(M2.svlOP)
+summary(M1a.svlOP)
 
 par(mfrow=c(2,2))
 plot(M2.svlOP) #assess model fit
 par(mfrow=c(1,1))
 
-write.csv(coef(summary(M2.svlOP)), "Outputs/FixedEff_M2_svlOP.csv")
-write.csv(Model.selection.svlOP,"Outputs/ModSel_svlOP.csv")
+write.csv(coef(summary(M1a.svlOP)), "Outputs/FixedEff_M1a_svlOP.csv")
+
 
 #--- WM SVL ---#
-M1.svlWM <- lmer(SVL_transWM ~ Season.centred*BA*inundated + (Season.centred|Grid), data = WMdf) #potential convergence issues, but allFit checks seem to be ok for all optimisers
-M2.svlWM <- lmer(SVL_transWM ~ Season.centred*inundated + (Season.centred|Grid), data = WMdf) #potential convergence issues, but allFit checks seem to be ok for all optimisers
+M1.svlWM <- lmer(SVL_transWM ~ BA*inundated + (Season.centred|Grid), data = WMdf) #potential convergence issues, but allFit checks seem to be ok for all optimisers
+M2.svlWM <- lmer(SVL_transWM ~ BA*inundated + (1|Grid), data = WMdf) #potential convergence issues, but allFit checks seem to be ok for all optimisers
 
 #Try decreasing stopping tolerances
 strict_tol <- lmerControl(optCtrl=list(xtol_abs=1e-8, ftol_abs=1e-8))
@@ -212,27 +195,6 @@ summary(M2.svlWM.fitcheck) #Actually, these summaries seem to indicate that conv
 # Will go ahead and assume that convergence warnings don't mean the fit is incorrect in this case
 # see: https://rdrr.io/cran/lme4/man/convergence.html
 
-models.svlWM <- list(M1.svlWM,M2.svlWM)
-Avg.models.svlWM <- modelAvg(models.svlWM, opt = TRUE)
-
-cAIC.M1.svlWM <- cAIC(M1.svlWM)
-cAIC.M2.svlWM <- cAIC(M2.svlWM)
-
-AIC.svlWM <- unlist(c(cAIC.M1.svlWM[5],cAIC.M2.svlWM[5]))
-df.svlWM <- unlist(c(cAIC.M1.svlWM[2],cAIC.M2.svlWM[2]))
-DAIC.svlWM <- Delta.AIC(AIC.svlWM)
-
-Cand.model.svlWM <- as.data.frame(cbind(AIC.svlWM, DAIC.svlWM, df.svlWM))
-Model.selection.svlWM <- Cand.model.svlWM %>%
-  reframe("Model" = c(1:2),
-          "cAIC" = round(AIC.svlWM,2), 
-          "DcAIC" = round(DAIC.svlWM,2),
-          "Estimated DF" = round(df.svlWM,2)
-  ) %>%
-  arrange(cAIC)
-
-Model.selection.svlWM
-
 summary(M1.svlWM)
 
 simulationOutput.M1.svlWM <- simulateResiduals(fittedModel = M1.svlWM, plot = F) #assess fit of model with lowest AIC
@@ -240,7 +202,7 @@ plotQQunif(simulationOutput.M1.svlWM) # left plot in plot.DHARMa()
 plotResiduals(simulationOutput.M1.svlWM) # right plot in plot.DHARMa()
 
 write.csv(coef(summary(M1.svlWM)), "Outputs/FixedEff_M1_svlWM.csv")
-write.csv(Model.selection.svlWM,"Outputs/ModSel_svlWM.csv")
+
 
 #=== Plot best model outcomes ===#
 
@@ -283,7 +245,7 @@ WMdf <- WMdf %>%
          fit.c = predict(M1.svlWM, re.form = NULL)) #conditional fits
 
 WMplot <- 
-  ggplot(WMdf, aes(y = SVL_transWM,x=Season,color=labelsWM)) +
+  ggplot(WMdf, aes(y = SVL,x=Season,color=labelsWM)) +
   geom_jitter(width=0.02) + 
   geom_smooth(data = subset(WMdf,Season < 2020.915),aes(y = fit.m),method="lm",se = FALSE) + 
   geom_smooth(data = subset(WMdf,Season > 2020.915),aes(y = fit.m),method="lm",se = FALSE) + 
