@@ -266,3 +266,65 @@ WMplot <-
 multiplot <- grid.arrange(OPplot, WMplot, ncol=1)
 ggsave("Outputs/SVLplots.png",plot=multiplot,
        units="cm",width=16.5,height=16.5)
+
+CPUEplot <- ggplot(data=CPUElizards, aes(x=Date,y=n/Nsessions,color=Species)) +
+  geom_point(stat="identity") +
+  #geom_point(data=TotalCPUE,aes(x=Date,y=nNsessions),stat="identity",
+  #           color="black", pch=1) +
+  facet_wrap(~factor(Labels, 
+                     levels=c('MP1: Inundated','WP3: Inundated',
+                              'MP2: Not affected','WP2: Not affected',
+                              'RE1: Not affected','RE2: Not affected')),
+             nrow=3,ncol=2)+
+  scale_color_manual(values=c('wm'="#92d050",'op'= "#ffac4c",'oa'="#815f46"),
+                     labels=c('wm' = "Woodworthia maculata", 'op' = "Oligosoma polychroma", 'oa' = "Oligosoma aeneum")) +
+  geom_vline(xintercept = inundation,color="#89c8f4",linewidth=1) +
+  scale_y_continuous(name = "CPUE") +
+  theme_bw() +
+  theme(legend.text = element_text(face = "italic"))
+
+ggsave("Outputs/Fig3.png",plot=CPUEplot,device="png",
+       height=20, width = 16, units = "cm",dpi="print")
+
+#=== Simple panel plots of SVL vs time ===#
+
+inundation<-2020.333
+
+OPsummary <- OPdf %>%
+      group_by(Season,Grid,inundated) %>%
+      summarize("Mean" = mean(SVL_mm),
+                "Min" = min(SVL_mm),
+                "Max"=max(SVL_mm))
+
+OPsummary$Inundated <- "Not affected"
+OPsummary$Inundated[OPsummary$inundated == 1] <- "Inundated"
+
+OPsummary$Labels <- paste(OPsummary$Grid,sep=": ",OPsummary$Inundated)
+
+WMsummary <- WMdf %>%
+  group_by(Season,Grid,inundated) %>%
+  summarize("Mean" = mean(SVL_mm),
+            "Min" = min(SVL_mm),
+            "Max"=max(SVL_mm))
+
+WMsummary$Inundated <- "Not affected"
+WMsummary$Inundated[WMsummary$inundated == 1] <- "Inundated"
+
+WMsummary$Labels <- paste(WMsummary$Grid,sep=": ",WMsummary$Inundated)
+
+SVLplot <- ggplot() +
+  geom_pointrange(stat="identity",data=WMsummary, aes(x=Season+0.01,y=Mean,ymax=Max,ymin=Min),color="#92d050") +
+  geom_pointrange(stat="identity",data=OPsummary, aes(x=Season-0.01,y=Mean,ymax=Max,ymin=Min),color="#ffac4c") +
+  facet_wrap(~factor(Labels, 
+                     levels=c('MP1: Inundated','WP3: Inundated',
+                              'MP2: Not affected','WP2: Not affected',
+                              'RE1: Not affected','RE2: Not affected')),
+             nrow=3,ncol=2) +
+  geom_vline(xintercept = inundation,color="#89c8f4",linewidth=1) +
+  scale_y_continuous(name = "SVL (mm)") +
+  scale_x_continuous(name = "Season") +
+  theme_bw() 
+  #theme(legend.text = element_text(face = "italic"))
+
+ggsave("Outputs/Fig4.png",plot=SVLplot,device="png",
+       height=20, width = 16, units = "cm",dpi="print")

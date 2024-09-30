@@ -75,20 +75,25 @@ inundation<-strptime("15/04/2020",format="%d/%m/%Y")
 
 Mtplot <- ggplot(data=Mtlizards, aes(x=Date,y=n/Nsessions,color=Species)) +
   geom_point(stat="identity") +
-  geom_point(data=TotalMt,aes(x=Date,y=nNsessions),stat="identity",
-             color="black", pch=1) +
+  #geom_point(data=TotalMt,aes(x=Date,y=nNsessions),stat="identity",
+  #           color="black", pch=1) +
   facet_wrap(~factor(Labels, 
-             levels=c('MP1: Inundated','MP2: Not affected','RE1: Not affected',
-                      'WP3: Inundated','WP2: Not affected','RE2: Not affected'))
-             ) +
+             levels=c('MP1: Inundated','WP3: Inundated',
+                      'MP2: Not affected','WP2: Not affected',
+                      'RE1: Not affected','RE2: Not affected')),
+             nrow=3,ncol=2) +
   scale_color_manual(values=c('wm'="#92d050",'op'= "#ffac4c",'oa'="#815f46"),
-                     labels=c('wm' = "Woodworthia maculata", 'op' = "Oligosoma polychroma", 'oa' = "Oligosoma aeneum")) +
+                     labels=c('wm' = "Woodworthia maculata", 
+                              'op' = "Oligosoma polychroma", 
+                              'oa' = "Oligosoma aeneum")) +
   geom_vline(xintercept = inundation,color="#89c8f4",linewidth=1) +
-  scale_y_continuous(name = "Mt+1 / day") +
+  #scale_y_continuous(name = "Mt+1 / day") +
+  labs(y = expression(paste('M'[t+1]*'day'^-1))) +
   theme_bw() +
   theme(legend.text = element_text(face = "italic"))
 
-ggsave("Outputs/Fig2.png",plot=Mtplot)
+ggsave("Outputs/Fig2.png",plot=Mtplot,device="png",
+       height=20, width = 16, units = "cm",dpi="print")
 
 #--- CPUE ---#
 
@@ -143,12 +148,13 @@ TotalCPUE$Species <- rep("All",times=length(TotalCPUE$Date))
 
 CPUEplot <- ggplot(data=CPUElizards, aes(x=Date,y=n/Nsessions,color=Species)) +
   geom_point(stat="identity") +
-  geom_point(data=TotalCPUE,aes(x=Date,y=nNsessions),stat="identity",
-             color="black", pch=1) +
+  #geom_point(data=TotalCPUE,aes(x=Date,y=nNsessions),stat="identity",
+  #           color="black", pch=1) +
   facet_wrap(~factor(Labels, 
-                     levels=c('MP1: Inundated','MP2: Not affected','RE1: Not affected',
-                              'WP3: Inundated','WP2: Not affected','RE2: Not affected'))
-  ) +
+                     levels=c('MP1: Inundated','WP3: Inundated',
+                              'MP2: Not affected','WP2: Not affected',
+                              'RE1: Not affected','RE2: Not affected')),
+                     nrow=3,ncol=2)+
   scale_color_manual(values=c('wm'="#92d050",'op'= "#ffac4c",'oa'="#815f46"),
                      labels=c('wm' = "Woodworthia maculata", 'op' = "Oligosoma polychroma", 'oa' = "Oligosoma aeneum")) +
   geom_vline(xintercept = inundation,color="#89c8f4",linewidth=1) +
@@ -156,5 +162,6 @@ CPUEplot <- ggplot(data=CPUElizards, aes(x=Date,y=n/Nsessions,color=Species)) +
   theme_bw() +
   theme(legend.text = element_text(face = "italic"))
 
-ggsave("Outputs/Fig3.png",plot=CPUEplot)
+ggsave("Outputs/Fig3.png",plot=CPUEplot,device="png",
+       height=20, width = 16, units = "cm",dpi="print")
 
