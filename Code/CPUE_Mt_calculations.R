@@ -1,7 +1,7 @@
 ##=== CPUE and Mt+1 (weighted by the number of check days) calculations ===##
 # Written by Sarah Herbert
 # for R version 4.3.1
-# Last test date: 11/07/2024
+# Last test date: 11/11/2024
 
 #--- Preamble ---#
 
@@ -82,7 +82,7 @@ Mtplot <- ggplot(data=Mtlizards, aes(x=Date,y=n/Nsessions,color=Species)) +
                       'MP2: Not affected','WP2: Not affected',
                       'RE1: Not affected','RE2: Not affected')),
              nrow=3,ncol=2) +
-  scale_color_manual(values=c('wm'="#92d050",'op'= "#ffac4c",'oa'="#815f46"),
+  scale_color_manual(values=c('wm'="#440154FF",'op'= "#20A387FF",'oa'="#B8DE29FF"),
                      labels=c('wm' = "Woodworthia maculata", 
                               'op' = "Oligosoma polychroma", 
                               'oa' = "Oligosoma aeneum")) +
@@ -155,7 +155,7 @@ CPUEplot <- ggplot(data=CPUElizards, aes(x=Date,y=n/Nsessions,color=Species)) +
                               'MP2: Not affected','WP2: Not affected',
                               'RE1: Not affected','RE2: Not affected')),
                      nrow=3,ncol=2)+
-  scale_color_manual(values=c('wm'="#92d050",'op'= "#ffac4c",'oa'="#815f46"),
+  scale_color_manual(values=c('wm'="#440154FF",'op'= "#20A387FF",'oa'="#B8DE29FF"),
                      labels=c('wm' = "Woodworthia maculata", 'op' = "Oligosoma polychroma", 'oa' = "Oligosoma aeneum")) +
   geom_vline(xintercept = inundation,color="#89c8f4",linewidth=1) +
   scale_y_continuous(name = "CPUE") +

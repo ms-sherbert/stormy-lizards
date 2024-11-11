@@ -1,7 +1,7 @@
 #=== Analysis of trends in body size and condition before and after inundation ===#
 # Written by S Herbert
 # For R version 4.3.1
-# Last tested: 11/07/2024
+# Last tested: 11/01/2024
 
 #=== Preamble (Dependencies & set working directory) ===#
 
@@ -313,8 +313,10 @@ WMsummary$Inundated[WMsummary$inundated == 1] <- "Inundated"
 WMsummary$Labels <- paste(WMsummary$Grid,sep=": ",WMsummary$Inundated)
 
 SVLplot <- ggplot() +
-  geom_pointrange(stat="identity",data=WMsummary, aes(x=Season+0.01,y=Mean,ymax=Max,ymin=Min),color="#92d050") +
-  geom_pointrange(stat="identity",data=OPsummary, aes(x=Season-0.01,y=Mean,ymax=Max,ymin=Min),color="#ffac4c") +
+  geom_pointrange(stat="identity",data=WMsummary, 
+                  aes(x=Season+0.01,y=Mean,ymax=Max,ymin=Min),color="#440154FF") +
+  geom_pointrange(stat="identity",data=OPsummary, 
+                  aes(x=Season-0.01,y=Mean,ymax=Max,ymin=Min),color="#20A387FF") +
   facet_wrap(~factor(Labels, 
                      levels=c('MP1: Inundated','WP3: Inundated',
                               'MP2: Not affected','WP2: Not affected',
