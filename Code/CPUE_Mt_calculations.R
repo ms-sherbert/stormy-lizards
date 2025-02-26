@@ -9,9 +9,10 @@ rm(list=ls())
 setwd("C:/Repositories/stormy-lizards") 
 #NB repositories in D: on uni desktop, C: on personal laptop
 
-library(dplyr)
+
 library(ggplot2)
 library(lubridate)
+library(tidyverse)
 
 caps<-read.csv("Data/CC-grid-captures_S1-S8.csv")
 sessions<-read.csv("Data/N-sessions.csv")
