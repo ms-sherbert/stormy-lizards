@@ -6,7 +6,7 @@
 #=== Preamble (Dependencies & set working directory) ===#
 
 rm(list=ls())
-setwd("C:/Repositories/stormy-lizards") 
+setwd("D:/Repositories/stormy-lizards") 
 #NB repositories in D: on uni desktop, C: on personal laptop
 
 #Use these bits of code to install latest versions of Matrix and lme4 if lmer models are throwing errors
@@ -65,6 +65,12 @@ captures <- subset(captures,!is.na(SVL_mm)) #remove missing values of SVL
 
 OPdf <- subset(captures, Species == "op")
 WMdf <- subset(captures, Species == "wm")
+
+#Export for graphing later
+
+OPWMdf <- subset(captures, Species == "op" | Species == "wm")
+write.csv(OPWMdf,"Outputs/SVLs.csv")
+
 
 #=== Examine underlying distribution of SVL ===#
 
