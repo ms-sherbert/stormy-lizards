@@ -50,7 +50,7 @@ Replacements <- disturbance %>%
                           "Pitfall.replaced" = sum(Pitfall.replaced)
                           )
 
-#write.csv(Replacements, "Outputs/Replaced-stations.csv")
+write.csv(Replacements, "Outputs/Replaced-stations.csv")
 
 #Create new empty covariate columns and append to CPUE and Mt+1 dataframes
 
