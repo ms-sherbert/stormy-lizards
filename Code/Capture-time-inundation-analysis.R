@@ -1,7 +1,7 @@
 #=== Analysis of trends in CPUE and Mt+1 before and after inundation ===#
 # Written by S Herbert
 # For R version 4.3.1
-# Last tested: 11/07/2024
+# Last tested: 09 June 2025
 
 #=== Preamble (Dependencies & set working directory) ===#
 
@@ -195,7 +195,7 @@ M2.mOP <- lmer(log(Mt1+0.01) ~ BA*Inundated + T.min + Pit.repl + (1|Grid), data 
 #in any pair of models with same fixed factor structure
 anova(M1.mOP,M2.mOP) #p = 1
 
-#No, so decided to use models with random intercept term (1|Grid)\
+#No, so decided to use models with random intercept term (1|Grid)
 
 summary(M2.mOP) #view summary of model
 
@@ -216,124 +216,3 @@ plotQQunif(simulationOutput.M.mWM) # left plot in plot.DHARMa()
 plotResiduals(simulationOutput.M.mWM) # right plot in plot.DHARMa()
 
 write.csv(coef(summary(M.mWM)), "Outputs/FixedEff_M_mWM.csv")
-
-#=== Plot best model outcomes ===#
-
-#Referenced: https://www.azandisresearch.com/2022/12/31/visualize-mixed-effect-regressions-in-r-with-ggplot2/
-
-#--- CPUE ---#
-
-#OP
-
-OP$labelsOP <- rep("Inundated",times=length(OP$CPUE))
-OP$labelsOP[OP$Inundated == 0] <- "Not affected"
-OP$Labels <- paste(OP$Grid,sep=": ",OP$labelsOP)
-
-OP <- OP %>% 
-  mutate(fit.m = predict(M1.cOP, re.form = NA), # marginal fits (i.e. fixed effects only)
-         fit.c = predict(M1.cOP, re.form = NULL)) #conditional fits (i.e. fixed + random effects)
-
-OPplot <- 
-  ggplot(OP, aes(y = log(CPUE+0.01),x=Season,color=labelsOP)) +
-  geom_smooth(data = subset(OP,Season < 2020.915), aes(y = fit.m),method="lm",se=FALSE) +
-  geom_smooth(data = subset(OP,Season > 2020.915), aes(y = fit.m),method="lm",se=FALSE) +
-  geom_point() +
-  #geom_point(data = subset(OP,Season < 2020.915), aes(y = fit.m),pch=3) +
-  #geom_point(data = subset(OP,Season > 2020.915), aes(y = fit.m),pch=3) +
-  scale_colour_manual(values=c('Not affected'="#ffac4c",'Inundated'= "#CC5500")) +
-  geom_vline(xintercept = 2020.33,color="#89c8f4",linewidth=1) +
-  #facet_wrap(~factor(Labels,
-  #                   levels=c('MP1: Inundated','MP2: Not affected','RE1: Not affected',
-  #                            'WP3: Inundated','WP2: Not affected','RE2: Not affected'))) +
-  #facet_wrap(~factor(labelsOP)) +
-  scale_y_continuous(name="Log-transformed CPUE") +
-  scale_x_continuous(name="Date") +
-  ggtitle(label = "Oligosoma polychroma") + 
-  theme_bw() +
-  theme(plot.title = element_text(face = "italic"),legend.title=element_blank())
-
-#WM
-
-WM$labelsWM <- rep("Inundated",times=length(WM$CPUE))
-WM$labelsWM[WM$Inundated == 0] <- "Not affected"
-WM$Labels <- paste(WM$Grid,sep=": ",WM$labelsWM)
-
-WM <- WM %>% 
-  mutate(fit.m = predict(M3.cWM, re.form = NA), # marginal fits (i.e. fixed effects only)
-         fit.c = predict(M3.cWM, re.form = NULL)) # conditional fits (i.e. fixed + random effects)
-
-WMplot <- 
-  ggplot(WM, aes(y = log(Mt1+0.01),x=Season,color=labelsWM)) +
-  geom_smooth(data = WM,aes(y = fit.m),method="lm",se = FALSE) + #No BA term in best model
-  geom_point() + 
-  #geom_point(data = subset(WM,Season < 2020.915), aes(y = fit.m),pch=3) +
-  #geom_point(data = subset(WM,Season > 2020.915), aes(y = fit.m),pch=3) +
-  scale_colour_manual(values=c('Not affected'="#92d050",'Inundated'= "#228B22")) +
-  geom_vline(xintercept = 2020.33,color="#89c8f4",linewidth=1) +
-  #facet_wrap(~factor(Labels,
-  #                   levels=c('MP1: Inundated','MP2: Not affected','RE1: Not affected',
-  #                            'WP3: Inundated','WP2: Not affected','RE2: Not affected'))) +
-  #facet_wrap(~factor(labelsWM)) +
-  scale_y_continuous(name="Log-transformed CPUE") +
-  scale_x_continuous(name="Date") +
-  ggtitle(label = "Woodworthia maculata") + 
-  theme_bw() +
-  theme(plot.title = element_text(face = "italic"),legend.title=element_blank())
-
-
-#--- Mt+1 ---#
-
-OP <- OP %>% 
-  mutate(fit.m = predict(M7.mOP, re.form = NA), #marginal fits (i.e. fixed effects only)
-         fit.c = predict(M7.mOP, re.form = NULL)) #conditional fits (i.e. fixed + random effects)
-
-OPplot <- 
-  ggplot(OP, aes(y = log(Mt1+0.01),x=Season,color=labelsOP)) +
-  #geom_smooth(data = OP, aes(y = fit.m),method="lm",se=FALSE) + #No BA term, no significant effects of time
-  geom_point() +
-  #geom_point(data = subset(OP,Season < 2020.915), aes(y = fit.m),pch=3) +
-  #geom_point(data = subset(OP,Season > 2020.915), aes(y = fit.m),pch=3) +
-  scale_colour_manual(values=c('Not affected'="#ffac4c",'Inundated'= "#CC5500")) +
-  geom_vline(xintercept = 2020.33,color="#89c8f4",linewidth=1) +
-  #facet_wrap(~factor(Labels,
-  #                   levels=c('MP1: Inundated','MP2: Not affected','RE1: Not affected',
-  #                            'WP3: Inundated','WP2: Not affected','RE2: Not affected'))) +
-  #facet_wrap(~factor(labelsOP)) +
-  scale_y_continuous(name="Log-transformed Mt+1 / day") +
-  scale_x_continuous(name="Date") +
-  ggtitle(label = "Oligosoma polychroma") + 
-  theme_bw() +
-  theme(plot.title = element_text(face = "italic"),legend.title=element_blank())
-
-#WM
-
-WM <- WM %>% 
-  mutate(fit.m = predict(M1.cWM, re.form = NA), # marginal fits (i.e. fixed effects only)
-         fit.c = predict(M1.cWM, re.form = NULL)) #conditional fits (i.e. fixed + random effects)
-
-WMplot <- 
-  ggplot(WM, aes(y = log(Mt1+0.01),x=Season,color=labelsWM)) +
-  geom_smooth(data = subset(WM,Season < 2020.915),aes(y = fit.m),method="lm",se = FALSE) + 
-  geom_smooth(data = subset(WM,Season > 2020.915),aes(y = fit.m),method="lm", se = FALSE) +
-  geom_point() + 
-  #geom_point(data = subset(WM,Season < 2020.915), aes(y = fit.m),pch=3) +
-  #geom_point(data = subset(WM,Season > 2020.915), aes(y = fit.m),pch=3) +
-  scale_colour_manual(values=c('Not affected'="#92d050",'Inundated'= "#228B22")) +
-  geom_vline(xintercept = 2020.33,color="#89c8f4",linewidth=1) +
-  #facet_wrap(~factor(Labels,
-  #                   levels=c('MP1: Inundated','MP2: Not affected','RE1: Not affected',
-  #                            'WP3: Inundated','WP2: Not affected','RE2: Not affected'))) +
-  #facet_wrap(~factor(labelsWM)) +
-  scale_y_continuous(name="Log-transformed Mt+1 / day") +
-  scale_x_continuous(name="Date") +
-  ggtitle(label = "Woodworthia maculata") + 
-  theme_bw() +
-  theme(plot.title = element_text(face = "italic"),legend.title=element_blank())
-
-
-#--- Export multiplots ---#
-
-#This is generic code for plotting either the CPUE or Mt+1 panel plots; change as needed
-LotsaPlots <- grid.arrange(OPplot, WMplot, DFplot, ncol=1)
-ggsave("Outputs/Mt1plots.png",plot=LotsaPlots,
-       units="cm",width=16.5,height=25.5)

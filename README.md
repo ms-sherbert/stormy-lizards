@@ -13,8 +13,9 @@ This code can be cited with the following doi: [![DOI](https://zenodo.org/badge/
 Code for all analyses, figures, and tabulated summary data reported in the manuscript or its Supplementary Material. This code pulls the raw data on lizard captures and survey covariates (in the `Data` subfolder), formats it correctly for further analysis, and writes tabulated data and analysis outputs to the `Outputs` subfolder. We have provided the tabulated data in `Outputs` so that these codes can be run independently. However, the code files were initially run in the following order:
 
 1. `CPUE_Mt_calculations.R` Reads in raw data from the `Data` subfolder and calculates Mt+1 and CPUE for further analysis.
-2. `Capture-time-inundation-analysis.R` Performs linear model analysis of the tabulated Mt+1 and CPUE data. Calls in helper functions from `Model-selection-functions.R`. Makes Figures 2 and 3. 
-3. `Body-size-time-inundation-analysis.R` Performs linear model analysis of body sizes in the raw captures data. Calls in helper functions from `Model-selection-functions.R`. Makes Figure 4. 
+2. `Capture-time-inundation-analysis.R` Performs linear model analysis of the tabulated Mt+1 and CPUE data. Calls in helper functions from `Model-selection-functions.R`. 
+3. `Body-size-time-inundation-analysis.R` Performs linear model analysis of body sizes in the raw captures data. Calls in helper functions from `Model-selection-functions.R`. 
+4. `Simple_graphs.R`. Makes manuscript Figure 2 and Figure S2 of the Supplementary Material. 
 
 ### Data
 

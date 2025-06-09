@@ -1,7 +1,7 @@
 ##=== CPUE and Mt+1 (weighted by the number of check days) calculations ===##
 # Written by Sarah Herbert
 # for R version 4.3.1
-# Last test date: 11/11/2024
+# Last test date: 09 June 2025
 
 #--- Preamble ---#
 
@@ -9,9 +9,6 @@ rm(list=ls())
 setwd("C:/Repositories/stormy-lizards") 
 #NB repositories in D: on uni desktop, C: on personal laptop
 
-
-library(ggplot2)
-library(lubridate)
 library(tidyverse)
 
 caps<-read.csv("Data/CC-grid-captures_S1-S8.csv")

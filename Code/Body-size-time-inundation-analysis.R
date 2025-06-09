@@ -1,12 +1,12 @@
 #=== Analysis of trends in body size and condition before and after inundation ===#
 # Written by S Herbert
 # For R version 4.3.1
-# Last tested: 11/01/2024
+# Last tested: 09 June 2026
 
 #=== Preamble (Dependencies & set working directory) ===#
 
 rm(list=ls())
-setwd("D:/Repositories/stormy-lizards") 
+setwd("C:/Repositories/stormy-lizards") 
 #NB repositories in D: on uni desktop, C: on personal laptop
 
 #Use these bits of code to install latest versions of Matrix and lme4 if lmer models are throwing errors
@@ -95,8 +95,8 @@ SVL_transWM <- transformTukey(WMdf$SVL_mm,plot=FALSE) #try Tukey's Ladder of Pow
 hist(SVL_transWM) #better, but still not great
 
 #check for covariance among numeric fixed covariates
-cor(OPdf[,c(2,11)],method="spearman",use="complete.obs")  # rho = 0.107
-cor(WMdf[,c(2,11)],method="spearman",use="complete.obs")  # rho = 0.218
+cor(OPdf[,c(12:13)],method="spearman",use="complete.obs")  # rho = -0.017
+cor(WMdf[,c(12:13)],method="spearman",use="complete.obs")  # rho = 0.006
 
 #=== SVL models ===#
 
@@ -179,17 +179,18 @@ Matrix::rcond(H) #0.4636483
 
 ## 4. restart the fit from the original value (or
 ## a slightly perturbed value):
-M1.svlWM.restart <- update(M1.svlWM, start=pars)
-set.seed(101)
-pars_x <- runif(length(pars),pars/1.01,pars*1.01)
-M1.svlWM.restart2 <- update(M1.svlWM, start=pars_x,
-                       control=strict_tol)
+# Lines 183-193 are throwing errors as at last test run; have commented out
+# but left in script to document previous process
 
-M2.svlWM.restart <- update(M2.svlWM, start=pars)
-set.seed(101)
-pars_x <- runif(length(pars),pars/1.01,pars*1.01)
-M2.svlWM.restart2 <- update(M2.svlWM, start=pars_x,
-                            control=strict_tol)
+#M1.svlWM.restart <- update(M1.svlWM, start=pars) 
+#set.seed(101)
+#pars_x <- runif(length(pars),pars/1.01,pars*1.01)
+#M1.svlWM.restart2 <- update(M1.svlWM, start=pars_x, control=strict_tol)
+
+#M2.svlWM.restart <- update(M2.svlWM, start=pars)
+#set.seed(101)
+#pars_x <- runif(length(pars),pars/1.01,pars*1.01)
+#M2.svlWM.restart2 <- update(M2.svlWM, start=pars_x, control=strict_tol)
 
 #---Try all available optimizers
 
@@ -203,136 +204,11 @@ summary(M2.svlWM.fitcheck) #Actually, these summaries seem to indicate that conv
 
 summary(M1.svlWM)
 
+# This is weird; the DHARMa diagnostic plots from the June 2025 test of this 
+# script suggest a lack of fit
+# I don't recall seeing this during the original analysis
 simulationOutput.M1.svlWM <- simulateResiduals(fittedModel = M1.svlWM, plot = F) #assess fit of model with lowest AIC
 plotQQunif(simulationOutput.M1.svlWM) # left plot in plot.DHARMa()
 plotResiduals(simulationOutput.M1.svlWM) # right plot in plot.DHARMa()
 
 write.csv(coef(summary(M1.svlWM)), "Outputs/FixedEff_M1_svlWM.csv")
-
-
-#=== Plot best model outcomes ===#
-
-#Referenced: https://www.azandisresearch.com/2022/12/31/visualize-mixed-effect-regressions-in-r-with-ggplot2/
-
-#--- OP ---#
-
-OPdf$labelsOP <- rep("Inundated",times=length(OPdf$uID))
-OPdf$labelsOP[OPdf$inundated == 0] <- "Not affected"
-
-OPdf <- OPdf %>% 
-  mutate(fit.m = predict(M1.svlOP, re.form = NA), #marginal fits (i.e. fixed effects only)
-         fit.c = predict(M1.svlOP, re.form = NULL)) #conditional fits (i.e. fixed + random effects)
-
-OPplot <- 
-  ggplot(OPdf, aes(y = SVL_transOP,x=Season,color=labelsOP)) +
-  geom_jitter(width=0.02) +
-  geom_smooth(data = OPdf, aes(y = fit.m),method="lm",se=FALSE) + 
-  #geom_point(data = subset(OP,Season < 2020.915), aes(y = fit.m),pch=3) +
-  #geom_point(data = subset(OP,Season > 2020.915), aes(y = fit.m),pch=3) +
-  scale_colour_manual(values=c('Not affected'="#ffac4c",'Inundated'= "#CC5500")) +
-  geom_vline(xintercept = 2020.33,color="#89c8f4",linewidth=1) +
-  #facet_wrap(~factor(Labels,
-  #                   levels=c('MP1: Inundated','MP2: Not affected','RE1: Not affected',
-  #                            'WP3: Inundated','WP2: Not affected','RE2: Not affected'))) +
-  #facet_wrap(~factor(labelsOP)) +
-  scale_y_continuous(name="SVL (mm) ^ 2.475") +
-  scale_x_continuous(name="Date") +
-  ggtitle(label = "Oligosoma polychroma") + 
-  theme_bw() +
-  theme(plot.title = element_text(face = "italic"),legend.title=element_blank())
-
-#--- WM ---#
-
-WMdf$labelsWM <- rep("Inundated",times=length(WMdf$uID))
-WMdf$labelsWM[WMdf$inundated == 0] <- "Not affected"
-
-WMdf <- WMdf %>% 
-  mutate(fit.m = predict(M1.svlWM, re.form = NA), #marginal fits
-         fit.c = predict(M1.svlWM, re.form = NULL)) #conditional fits
-
-WMplot <- 
-  ggplot(WMdf, aes(y = SVL,x=Season,color=labelsWM)) +
-  geom_jitter(width=0.02) + 
-  geom_smooth(data = subset(WMdf,Season < 2020.915),aes(y = fit.m),method="lm",se = FALSE) + 
-  geom_smooth(data = subset(WMdf,Season > 2020.915),aes(y = fit.m),method="lm",se = FALSE) + 
-  #geom_point(data = subset(WMdf,Season < 2020.915), aes(y = fit.m),pch=3) +
-  #geom_point(data = subset(WMdf,Season > 2020.915), aes(y = fit.m),pch=3) +
-  scale_colour_manual(values=c('Not affected'="#92d050",'Inundated'= "#228B22")) +
-  geom_vline(xintercept = 2020.33,color="#89c8f4",linewidth=1) +
-  #facet_wrap(~factor(Labels,
-  #                   levels=c('MP1: Inundated','MP2: Not affected','RE1: Not affected',
-  #                            'WP3: Inundated','WP2: Not affected','RE2: Not affected'))) +
-  #facet_wrap(~factor(labelsWM)) +
-  scale_y_continuous(name="SVL (mm) ^ 4.5") +
-  scale_x_continuous(name="Date") +
-  ggtitle(label = "Woodworthia maculata") + 
-  theme_bw() +
-  theme(plot.title = element_text(face = "italic"),legend.title=element_blank())
-
-multiplot <- grid.arrange(OPplot, WMplot, ncol=1)
-ggsave("Outputs/SVLplots.png",plot=multiplot,
-       units="cm",width=16.5,height=16.5)
-
-CPUEplot <- ggplot(data=CPUElizards, aes(x=Date,y=n/Nsessions,color=Species)) +
-  geom_point(stat="identity") +
-  #geom_point(data=TotalCPUE,aes(x=Date,y=nNsessions),stat="identity",
-  #           color="black", pch=1) +
-  facet_wrap(~factor(Labels, 
-                     levels=c('MP1: Inundated','WP3: Inundated',
-                              'MP2: Not affected','WP2: Not affected',
-                              'RE1: Not affected','RE2: Not affected')),
-             nrow=3,ncol=2)+
-  scale_color_manual(values=c('wm'="#92d050",'op'= "#ffac4c",'oa'="#815f46"),
-                     labels=c('wm' = "Woodworthia maculata", 'op' = "Oligosoma polychroma", 'oa' = "Oligosoma aeneum")) +
-  geom_vline(xintercept = inundation,color="#89c8f4",linewidth=1) +
-  scale_y_continuous(name = "CPUE") +
-  theme_bw() +
-  theme(legend.text = element_text(face = "italic"))
-
-ggsave("Outputs/Fig3.png",plot=CPUEplot,device="png",
-       height=20, width = 16, units = "cm",dpi="print")
-
-#=== Simple panel plots of SVL vs time ===#
-
-inundation<-2020.333
-
-OPsummary <- OPdf %>%
-      group_by(Season,Grid,inundated) %>%
-      summarize("Mean" = mean(SVL_mm),
-                "Min" = min(SVL_mm),
-                "Max"=max(SVL_mm))
-
-OPsummary$Inundated <- "Not affected"
-OPsummary$Inundated[OPsummary$inundated == 1] <- "Inundated"
-
-OPsummary$Labels <- paste(OPsummary$Grid,sep=": ",OPsummary$Inundated)
-
-WMsummary <- WMdf %>%
-  group_by(Season,Grid,inundated) %>%
-  summarize("Mean" = mean(SVL_mm),
-            "Min" = min(SVL_mm),
-            "Max"=max(SVL_mm))
-
-WMsummary$Inundated <- "Not affected"
-WMsummary$Inundated[WMsummary$inundated == 1] <- "Inundated"
-
-WMsummary$Labels <- paste(WMsummary$Grid,sep=": ",WMsummary$Inundated)
-
-SVLplot <- ggplot() +
-  geom_pointrange(stat="identity",data=WMsummary, 
-                  aes(x=Season+0.01,y=Mean,ymax=Max,ymin=Min),color="#440154FF") +
-  geom_pointrange(stat="identity",data=OPsummary, 
-                  aes(x=Season-0.01,y=Mean,ymax=Max,ymin=Min),color="#20A387FF") +
-  facet_wrap(~factor(Labels, 
-                     levels=c('MP1: Inundated','WP3: Inundated',
-                              'MP2: Not affected','WP2: Not affected',
-                              'RE1: Not affected','RE2: Not affected')),
-             nrow=3,ncol=2) +
-  geom_vline(xintercept = inundation,color="#89c8f4",linewidth=1) +
-  scale_y_continuous(name = "SVL (mm)") +
-  scale_x_continuous(name = "Season") +
-  theme_bw() 
-  #theme(legend.text = element_text(face = "italic"))
-
-ggsave("Outputs/Fig4.png",plot=SVLplot,device="png",
-       height=20, width = 16, units = "cm",dpi="print")

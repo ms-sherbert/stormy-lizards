@@ -1,22 +1,19 @@
-#--- Simplified graphics ---#
+#--- Simplified graphics for manuscript ---#
 # Written by Sarah Herbert
 # for R version 4.3.1
-# Last test date: 26/02/2025
+# Last test date: 09 June 2025
 
 #--- Preamble ---#
 
 rm(list=ls())
-setwd("D:/Repositories/stormy-lizards") 
+setwd("C:/Repositories/stormy-lizards") 
 #NB repositories in D: on uni desktop, C: on personal laptop
 
-
-library(ggplot2)
-library(lubridate)
 library(tidyverse)
 library(gridExtra)
 
 CPUElizards <- read.csv("Outputs/CPUElizards.csv")
-SVLs <- read.csv("outputs/SVLs.csv")
+SVLs <- read.csv("Outputs/SVLs.csv")
 Mtlizards <- read.csv("Outputs/Mtlizards.csv")
 
 inundation<-strptime("15/04/2020",format="%d/%m/%Y")
@@ -55,7 +52,7 @@ CPUEsummaryplot<-ggplot(data=subset(CPUEsummary,Species != "oa"),
   geom_pointrange(stat="identity", position="jitter") +
   facet_wrap(~factor(Species),ncol=2) +
   scale_color_manual(values=c('Inundated (N = 2)'="#023E8A",'Not affected (N = 4)'= "#FFC20A")) +
-  labs(color = "Storm surge impact", title="A") +
+  labs(color = "Storm surge impact", title="a") +
   geom_vline(xintercept = inundation,color="#89c8f4",linewidth=1) +
   scale_y_continuous(name = "CPUE") +
   theme_bw() +
@@ -76,7 +73,7 @@ SVLsummaryplot<-ggplot(data=SVLsummary,
   geom_pointrange(stat="identity", position="jitter") +
   facet_wrap(~factor(Species),ncol=2) +
   scale_color_manual(values=c('Inundated (N = 2)'="#023E8A",'Not affected (N = 4)'= "#FFC20A")) +
-  labs(color = "Storm surge impact",title="B") +
+  labs(color = "Storm surge impact",title="b") +
   geom_vline(xintercept = decimal_date(inundation),color="#89c8f4",linewidth=1) +
   scale_y_continuous(name = "SVL (mm)") +
   scale_x_continuous(name = "Date") +
