@@ -15,7 +15,7 @@ Code for all analyses, figures, and tabulated summary data reported in the manus
 1. `CPUE_Mt_calculations.R` Reads in raw data from the `Data` subfolder and calculates Mt+1 and CPUE for further analysis.
 2. `Capture-time-inundation-analysis.R` Performs linear model analysis of the tabulated Mt+1 and CPUE data. Calls in helper functions from `Model-selection-functions.R`. 
 3. `Body-size-time-inundation-analysis.R` Performs linear model analysis of body sizes in the raw captures data. Calls in helper functions from `Model-selection-functions.R`. 
-4. `Simple_graphs.R`. Makes manuscript Figure 2 and Figure S2 of the Supplementary Material. 
+4. `Simple_graphs.R` Makes manuscript Figure 2 and Figure S2 of the Supplementary Material. 
 
 ### Data
 
