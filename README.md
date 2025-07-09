@@ -1,6 +1,6 @@
 # stormy-lizards
 
-Code and data repository for the manuscript: Deacon MR, Herbert SM, Nelson NJ. (2025) Storm surge impacts on coastal lizard populations: a case study on how climate change may affect endemic species. *New Zealand Journal of Ecology 49(1)*: (in press).
+Code and data repository for the manuscript: Deacon MR, Herbert SM, Nelson NJ. (2025) Storm surge impacts on coastal lizard populations: a case study on how climate change may affect endemic species. *New Zealand Journal of Ecology 49(1)*: 3601. https://doi.org/10.20417/nzjecol.49.3601 
 
 All code is written for R version 4.3.1. We cannot guarantee that these codes will work with other versions of R. 
 
